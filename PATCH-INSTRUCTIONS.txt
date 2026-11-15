@@ -1,0 +1,29 @@
+VendorGuard honeytoken workflow patch
+
+This patch replaces only:
+- backend/app/main.py
+- backend/app/static/app.js
+
+Before applying:
+1. Stop the running Uvicorn server with Ctrl+C.
+2. Make backup copies of your current main.py and app.js.
+3. Extract this ZIP into your existing VendorGuard-MVP folder, allowing these two files to be replaced.
+4. Start the server again from the backend folder:
+   .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload
+
+Important:
+- Keep your existing backend/vendorguard.db database. Do not delete it.
+- If vendor1 was suspended by the old demo, log in as admin and restore vendor1 under Contractors.
+- Demo credentials:
+  admin / Admin@12345
+  vendor1 / Vendor@12345
+
+Test:
+1. Log in as admin and restore vendor1 if needed.
+2. Log out and log in as vendor1.
+3. Open Documents. A planted "Archived vendor handover index" reference appears as a plausible related resource, but it is not included in the normal /api/documents catalogue.
+4. Click Open reference. The authenticated vendor's request reaches the backend honeytoken check.
+5. The backend records HONEYTOKEN_ACCESS, creates a critical incident, revokes the vendor session, and suspends the vendor.
+6. Log in as admin and inspect Security Monitoring > Incidents and Logs.
+
+The decoy ID is intentionally exposed as a lure to the authenticated vendor through a separate endpoint, but it is never returned as an ordinary document. The alert is generated only when the vendor actually requests that decoy endpoint. This is a local educational prototype, not a production security control.
